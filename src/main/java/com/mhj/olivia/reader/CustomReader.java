@@ -1,5 +1,7 @@
 package com.mhj.olivia.reader;
 
-public class CustomReader {
+import org.springframework.batch.item.file.FlatFileItemReader;
 
+public class CustomReader extends FlatFileItemReader<T> {
+	
 }
