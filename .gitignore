@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 .csv
 .log
+.mvn/
 
 ### STS ###
 .apt_generated
