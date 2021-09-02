@@ -1,4 +1,4 @@
-package com.mhj.olivia;
+package com.mhj.olivia.mapper;
 
 import org.springframework.batch.item.file.LineMapper;
 

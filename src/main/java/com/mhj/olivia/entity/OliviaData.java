@@ -19,13 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
+//@Entity
 public class OliviaData {
 	
 	private static DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String instituicaoFinanceira;

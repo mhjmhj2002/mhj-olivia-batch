@@ -2,8 +2,7 @@ package com.mhj.olivia.config;
 
 import java.io.IOException;
 
-import javax.batch.api.listener.JobListener;
-
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -12,7 +11,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.support.MultiResourcePartitioner;
 import org.springframework.batch.core.partition.support.Partitioner;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,10 +25,12 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.mhj.olivia.OliviaFileLineMapper;
 import com.mhj.olivia.dto.OliviaDataDto;
 import com.mhj.olivia.entity.OliviaData;
 import com.mhj.olivia.listener.CustomListener;
+import com.mhj.olivia.listener.JobListenerOlivia;
+import com.mhj.olivia.listener.tasklet.MoveErrorFilesTasklet;
+import com.mhj.olivia.mapper.OliviaFileLineMapper;
 import com.mhj.olivia.processor.CustomProcessor;
 import com.mhj.olivia.reader.CustomReader;
 import com.mhj.olivia.tasklet.CheckSystemTasklet;
@@ -43,9 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BatchConfiguration {
 
-	  private static final int THREAD_POOL = 200;
+	  public static final int THREAD_POOL = 200;
 
-	@Autowired
+	  @Autowired
 	  public JobBuilderFactory jobBuilderFactory;
 
 	  @Autowired
@@ -54,20 +54,24 @@ public class BatchConfiguration {
 	  @Autowired
 	  private CheckSystemTasklet checkSystemTasklet;
 	  
+	  @Autowired
 	  private FlatFileItemReader<OliviaDataDto> customReader;
 	  
 	  @Value("${files.path.resources}")
 	  private String resourcesPath;
 	  
+	  @Value("${files.path.error}")
+	  private String errorPath;
+	  
 	  @Value("${files.path.type}")
-	  private int fileType;
+	  private String fileType;
 	  
 	  @Bean
-	  public void mainJob(JobListener jobListener, Step step) {
-		  jobBuilderFactory
+	  public Job mainJob(JobListenerOlivia jobListener, Step step) {
+		  return jobBuilderFactory
 		  .get("mainJob")
 		  .incrementer(new RunIdIncrementer())
-		  .listener(new CustomListener())
+		  .listener(jobListener)
 		  .flow(checkSystemStep())
 		  .next(moveErrorFiles())
 		  .next(masterStep())
@@ -76,11 +80,13 @@ public class BatchConfiguration {
 	  }
 
 	  private Step moveErrorFiles() {
-		  
-		return null;
+		  return this.stepBuilderFactory
+				  .get("moveErrorFiles")
+				  .tasklet(new MoveErrorFilesTasklet(resourcesPath, errorPath))
+				  .build();
 	}
 
-	private Step checkSystemStep() {
+	  private Step checkSystemStep() {
 		  return stepBuilderFactory
 				  .get("checkSystemStep")
 				  .tasklet(checkSystemTasklet)
@@ -89,7 +95,7 @@ public class BatchConfiguration {
 	  
 	  @Bean
 	  @Qualifier("masterStep")
-	  private Step masterStep() {
+	  public Step masterStep() {
 		  return stepBuilderFactory
 				  .get("masterStep")
 				  .partitioner("step1", partitioner())
@@ -132,6 +138,15 @@ public class BatchConfiguration {
 
 	@Bean(name = "taskExecutorReader")
 	public TaskExecutor taskExecutorReader() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(THREAD_POOL);
+		executor.setThreadNamePrefix("thread-batch");
+		executor.initialize();
+		return executor;
+	}
+	
+	@Bean
+	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		taskExecutor.setMaxPoolSize(10);
 		taskExecutor.setCorePoolSize(10);
@@ -140,23 +155,23 @@ public class BatchConfiguration {
 		return taskExecutor;
 	}
 
-	private CustomListener getCustomListener() {
+	public CustomListener getCustomListener() {
 		return new CustomListener();
 	}
 
 	@Bean
-	private CustomWriter getCustomWriter() {
+	public CustomWriter getCustomWriter() {
 		return new CustomWriter();
 	}
 
 	@Bean
-	private CustomProcessor getCustomProcessor() {
+	public CustomProcessor getCustomProcessor() {
 		return new CustomProcessor();
 	}
 
 	@Bean("oliviaPartitioner")
 	@StepScope
-	private Partitioner partitioner() {
+	public Partitioner partitioner() {
 		MultiResourcePartitioner partitioner = new MultiResourcePartitioner();
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		Resource[] resources = null;
