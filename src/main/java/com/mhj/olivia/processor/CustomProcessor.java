@@ -27,20 +27,31 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 	private static DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
 
 	@Autowired
-	private ArquivoErroUtil linhaArquivoErroUtil;
+	private ArquivoErroUtil arquivoErroUtil;
 
 	@Override
-	public OliviaData process(OliviaDataDto item) throws Exception {
-		OliviaData dto = new OliviaData();
-		dto.setCategoriaOlivia(item.getCategoriaOlivia());
-		dto.setData(getDataDate(item.getData()));
-		dto.setDescricaoTransacao(item.getDescricaoTransacao());
-		dto.setInstituicaoFinanceira(item.getInstituicaoFinanceira());
-		dto.setNomeConta(item.getNomeConta());
-		dto.setPendente(getPendenteBoolean(item.getPendente()));
-		dto.setTipoConta(item.getTipoConta());
-		dto.setValor(getValorDecimal(item.getValor()));
-		return dto;
+	public OliviaData process(OliviaDataDto item) {
+		if (Objects.isNull(item)) {
+			return null;
+		}
+		try {
+			OliviaData dto = new OliviaData();
+			dto.setCategoriaOlivia(item.getCategoriaOlivia());
+			dto.setData(getDataDate(item.getData()));
+			dto.setDescricaoTransacao(item.getDescricaoTransacao());
+			dto.setInstituicaoFinanceira(item.getInstituicaoFinanceira());
+			dto.setNomeConta(item.getNomeConta());
+			dto.setPendente(getPendenteBoolean(item.getPendente()));
+			dto.setTipoConta(item.getTipoConta());
+			dto.setValor(getValorDecimal(item.getValor()));
+			dto.setLinha(item.getLinha());
+			dto.setNumeroLinha(item.getNumeroLinha());
+			return dto;
+		} catch (Exception e) {
+			log.error("Erro processor linha: {}. mensagem: {}", item.getNumeroLinha(), e.getMessage());
+			arquivoErroUtil.craLinhaArquivoErro(item.getLinha(), ArquivoErroUtil.ARQUIVO_ERRO_PROCESSOR);
+		}
+		return null;
 	}
 
 	private Date getDataDate(String data) throws ParseException {

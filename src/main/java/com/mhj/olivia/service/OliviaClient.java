@@ -33,7 +33,7 @@ public class OliviaClient {
 	
 	@Recover
 	public synchronized void criarLinhaArquivoErro(OliviaData dto) {
-		arquivoErroUtil.craLinhaArquivoErro(dto);
+		arquivoErroUtil.craLinhaArquivoErro(dto.getLinha(), ArquivoErroUtil.ARQUIVO_ERRO_CLIENT);
 	}
 
 }

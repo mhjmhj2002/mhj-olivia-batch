@@ -19,6 +19,8 @@ public class OliviaData {
 	private String descricaoTransacao;
 	private BigDecimal valor;
 	private String categoriaOlivia;
-	private Boolean pendente;
+	private Boolean pendente;	
+	private String linha;	
+	private int numeroLinha;
 
 }
