@@ -3,8 +3,10 @@ package com.mhj.olivia.dto;
 import com.opencsv.bean.CsvBindByPosition;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class OliviaDataDto {
 
 	@CsvBindByPosition(position = 0)

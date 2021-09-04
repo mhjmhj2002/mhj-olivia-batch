@@ -48,7 +48,7 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 			dto.setNumeroLinha(item.getNumeroLinha());
 			return dto;
 		} catch (Exception e) {
-			log.error("Erro processor linha: {}. mensagem: {}", item.getNumeroLinha(), e.getMessage());
+			log.error("Erro processor linha: {}. mensagem: {}", item.getNumeroLinha(), e);
 			arquivoErroUtil.craLinhaArquivoErro(item.getLinha(), ArquivoErroUtil.ARQUIVO_ERRO_PROCESSOR);
 		}
 		return null;

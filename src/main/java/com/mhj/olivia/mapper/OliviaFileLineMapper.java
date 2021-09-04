@@ -18,6 +18,9 @@ public class OliviaFileLineMapper implements LineMapper<OliviaDataDto> {
 	public OliviaDataDto mapLine(String line, int lineNumber) throws Exception {
 		try {
 			String[] split = line.split(";");
+			if (split.length != 8) {
+				throw new Exception("linha " + lineNumber + " inconsistente, split number: " + split.length);
+			}
 			OliviaDataDto dto = new OliviaDataDto();
 			dto.setInstituicaoFinanceira(split[0]);
 			dto.setTipoConta(split[1]);
