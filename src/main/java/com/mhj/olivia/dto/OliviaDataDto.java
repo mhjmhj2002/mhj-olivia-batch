@@ -30,5 +30,9 @@ public class OliviaDataDto {
 	
 	@CsvBindByPosition(position = 7)
 	private String pendente;
+	
+	private String linha;
+	
+	private int numeroLinha;
 
 }

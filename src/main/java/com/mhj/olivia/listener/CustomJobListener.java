@@ -6,16 +6,16 @@ import org.springframework.batch.core.JobExecutionListener;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CustomListener implements JobExecutionListener {
+public class CustomJobListener implements JobExecutionListener {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		log.info("beforeJob");
+		log.info("Iniciando Job {}", jobExecution.getJobConfigurationName());
 	}
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		log.info("afterJob");
+		log.info("Finalizando Job {}", jobExecution.getJobConfigurationName());
 	}
 
 }

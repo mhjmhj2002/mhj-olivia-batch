@@ -7,9 +7,9 @@ import org.springframework.core.io.Resource;
 import com.mhj.olivia.dto.OliviaDataDto;
 
 public class CustomReader extends FlatFileItemReader<OliviaDataDto> implements ResourceAware {
-	
+
 	private Resource resource;
-	
+
 	private boolean arquivoFinalizado = false;
 
 	@Override
@@ -26,7 +26,5 @@ public class CustomReader extends FlatFileItemReader<OliviaDataDto> implements R
 //			finalizarFileService.finalizar(resource.getFile());
 		}
 	}
-	
-	
-	
+
 }

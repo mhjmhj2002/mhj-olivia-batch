@@ -1,5 +1,6 @@
 package com.mhj.olivia.listener;
 
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,11 @@ public class JobListenerOlivia extends JobExecutionListenerSupport {
 	@SneakyThrows
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		// TODO Auto-generated method stub
-		super.afterJob(jobExecution);
+		if (BatchStatus.COMPLETED.equals(jobExecution.getStatus())) {
+			log.info("Batch executado com sucesso. EXIT CODE={}", jobExecution.getStatus());
+		} else {
+			log.info("Batch executado com erro. EXIT CODE={}", jobExecution.getStatus());
+		}
 		taskExecutor.shutdown();
 	}
 

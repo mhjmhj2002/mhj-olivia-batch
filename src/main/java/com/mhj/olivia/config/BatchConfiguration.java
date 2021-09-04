@@ -27,7 +27,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.mhj.olivia.dto.OliviaDataDto;
 import com.mhj.olivia.entity.OliviaData;
-import com.mhj.olivia.listener.CustomListener;
+import com.mhj.olivia.listener.CustomStepListener;
 import com.mhj.olivia.listener.JobListenerOlivia;
 import com.mhj.olivia.listener.tasklet.MoveErrorFilesTasklet;
 import com.mhj.olivia.mapper.OliviaFileLineMapper;
@@ -110,7 +110,7 @@ public class BatchConfiguration {
 				.reader(customReader)
 				.processor(getCustomProcessor())
 				.writer(getCustomWriter())
-				.listener(getCustomListener())
+				.listener(getStepListener())
 				.taskExecutor(taskExecutorReader())
 				.throttleLimit(THREAD_POOL)
 				.build();
@@ -124,7 +124,7 @@ public class BatchConfiguration {
 		CustomReader reader = new CustomReader();
 		reader.setName("oliviaItemReader");
 		reader.setStrict(false);
-		reader.setLinesToSkip(0);
+		reader.setLinesToSkip(1);
 		reader.setLineMapper(new OliviaFileLineMapper());
 		try {
 			reader.setResource(new UrlResource(fileName));
@@ -155,8 +155,8 @@ public class BatchConfiguration {
 		return taskExecutor;
 	}
 
-	public CustomListener getCustomListener() {
-		return new CustomListener();
+	public CustomStepListener getStepListener() {
+		return new CustomStepListener();
 	}
 
 	@Bean
@@ -178,7 +178,7 @@ public class BatchConfiguration {
 		try {
 			resources = resolver.getResources("file:" + resourcesPath + "*." + fileType);
 		} catch (IOException e) {
-			log.error("Erro del eitura");
+			log.error("Erro de leitura");
 		}
 		partitioner.setResources(resources);
 		partitioner.partition(10);
