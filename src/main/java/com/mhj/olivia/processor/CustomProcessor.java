@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mhj.olivia.dto.OliviaDataDto;
+import com.mhj.olivia.entity.CategoriaOlivia;
 import com.mhj.olivia.entity.OliviaData;
 import com.mhj.olivia.enums.EnumSimNao;
 import com.mhj.olivia.util.ArquivoErroUtil;
@@ -24,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData> {
 
-//	private static DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
-
 	@Autowired
 	private ArquivoErroUtil arquivoErroUtil;
 
@@ -36,7 +35,7 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 		}
 		OliviaData dto = new OliviaData();
 		try {
-			dto.setCategoriaOlivia(item.getCategoriaOlivia());
+			dto.setCategoriaOlivia(new CategoriaOlivia(item.getCategoriaOlivia()));
 			dto.setData(getDataDate(item.getData()));
 			dto.setDescricaoTransacao(item.getDescricaoTransacao());
 			dto.setInstituicaoFinanceira(item.getInstituicaoFinanceira());
