@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData> {
 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
+//	private static DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
 
 	@Autowired
 	private ArquivoErroUtil arquivoErroUtil;
@@ -34,8 +34,8 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 		if (Objects.isNull(item)) {
 			return null;
 		}
+		OliviaData dto = new OliviaData();
 		try {
-			OliviaData dto = new OliviaData();
 			dto.setCategoriaOlivia(item.getCategoriaOlivia());
 			dto.setData(getDataDate(item.getData()));
 			dto.setDescricaoTransacao(item.getDescricaoTransacao());
@@ -48,7 +48,9 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 			dto.setNumeroLinha(item.getNumeroLinha());
 			return dto;
 		} catch (Exception e) {
-			log.error("Erro processor linha: {}. mensagem: {}", item.getNumeroLinha(), e);
+			log.error("Erro processor linha: {}. mensagem: {}", item.getNumeroLinha(), e.getMessage());
+			log.error("item: {}", item.toString());
+			log.error("dto: {}", dto.toString());
 			arquivoErroUtil.craLinhaArquivoErro(item.getLinha(), ArquivoErroUtil.ARQUIVO_ERRO_PROCESSOR);
 		}
 		return null;
@@ -58,6 +60,7 @@ public class CustomProcessor implements ItemProcessor<OliviaDataDto, OliviaData>
 		if (Objects.isNull(data)) {
 			return null;
 		}
+		DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
 		return dateFormat.parse(data);
 	}
 

@@ -17,6 +17,7 @@ public class OliviaFileLineMapper implements LineMapper<OliviaDataDto> {
 	@Override
 	public OliviaDataDto mapLine(String line, int lineNumber) throws Exception {
 		try {
+			line = line.replaceAll("&amp;", "&");
 			String[] split = line.split(";");
 			if (split.length != 8) {
 				throw new Exception("linha " + lineNumber + " inconsistente, split number: " + split.length);
